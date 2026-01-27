@@ -91,6 +91,7 @@ public class Player : MonoBehaviour
 
     private void Idle()
     {
+        rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
     }
 
     private void Jump()
