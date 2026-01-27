@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
     public PlayerState currentState = PlayerState.Idle;
     public Transform groundCheck;
     public LayerMask groundLayer;
+    public float groundCheckRadius = 0.2f;
 
     public Rigidbody2D rb;
     private InputAction moveAction;
@@ -76,29 +77,20 @@ public class Player : MonoBehaviour
                 Idle();
                 break;
             case PlayerState.Running:
+            case PlayerState.Falling:
+            case PlayerState.Jumping:
                 Move();
                 break;
             case PlayerState.Jump:
                 Jump();
                 break;
-            case PlayerState.Falling:
-                Falling();
-                break;
+            
 
         }
     }
 
     private void Idle()
     {
-        rb.linearVelocity = Vector2.zero;
-    }
-
-    private void Move()
-    {
-        Vector2 input = moveAction.ReadValue<Vector2>();
-        Vector3 movementDirection = input.normalized.x > 0 ? Vector3.right : input.normalized.x < 0 ? Vector3.left : Vector3.zero;
-        rb.linearVelocity = movementDirection * playerData.moveSpeed; 
-        transform.localScale = new Vector3(movementDirection.x != 0 ? movementDirection.x : transform.localScale.x, transform.localScale.y, transform.localScale.z);
     }
 
     private void Jump()
@@ -110,13 +102,11 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Tried to jump while not grounded.");
-            currentState = PlayerState.Jumping;
+            currentState = PlayerState.Running;
         }
     }
 
-
-    private void Falling()
+    private void Move()
     {
         Vector2 input = moveAction.ReadValue<Vector2>();
         float movementDirection = input.normalized.x > 0 ? 1 : input.normalized.x < 0 ? -1 : 0;
@@ -126,14 +116,15 @@ public class Player : MonoBehaviour
 
     private bool CheckGround()
     {
-        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.2f, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
+        Debug.Log(hit.collider != null ? "Grounded" : "Not Grounded");
         return hit.collider != null;
     }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * 0.1f);
+        Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
     }
 }
 
