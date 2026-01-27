@@ -33,7 +33,7 @@ public class Enemy : MonoBehaviour
     {
         
     }
-    void OnCollisionEnter(Collision collision)
+    void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
@@ -41,10 +41,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void follow()
-    {
-        
-    }
     private void UpdateState()
     {
         if (Vector2.Distance(transform.position, playerTransform.position) < followRange && Mathf.Abs(transform.position.y - playerTransform.position.y) < followRangeY)
