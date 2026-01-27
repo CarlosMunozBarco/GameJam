@@ -52,14 +52,14 @@ public class Player : MonoBehaviour
                 currentState = PlayerState.Idle;
             }
         }
-        else if(currentState == PlayerState.Jump)
+        else if(currentState == PlayerState.Jumping)
         {
             if(rb.linearVelocity.y < 0)
             {
                 currentState = PlayerState.Falling;
             }
         }
-        else if(currentState == PlayerState.Falling)
+        else if (currentState == PlayerState.Falling)
         {
             if (CheckGround())
             {
@@ -105,10 +105,16 @@ public class Player : MonoBehaviour
     {
         if(CheckGround())
         {
-            Debug.Log("Jump");
             rb.AddForce(Vector2.up * playerData.jumpForce, ForceMode2D.Impulse);
+            currentState = PlayerState.Jumping;
+        }
+        else
+        {
+            Debug.LogWarning("Tried to jump while not grounded.");
+            currentState = PlayerState.Jumping;
         }
     }
+
 
     private void Falling()
     {
@@ -120,7 +126,7 @@ public class Player : MonoBehaviour
 
     private bool CheckGround()
     {
-        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.1f, groundLayer);
+        RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, 0.2f, groundLayer);
         return hit.collider != null;
     }
 
@@ -136,5 +142,6 @@ public enum PlayerState
     Idle,    
     Running,
     Jump,
+    Jumping,
     Falling
 }
