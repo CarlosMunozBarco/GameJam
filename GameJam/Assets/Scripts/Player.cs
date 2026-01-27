@@ -1,3 +1,4 @@
+using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,7 @@ public class Player : MonoBehaviour
     public Rigidbody2D rb;
     private InputAction moveAction;
     private InputAction jumpAction;
+    private Animator animator;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -19,6 +21,8 @@ public class Player : MonoBehaviour
         moveAction = InputSystem.actions["Move"];
         jumpAction = InputSystem.actions["Jump"];
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponentInChildren<Animator>();
+        playerData.currentHealth = playerData.maxHealth;
     }
 
     // Update is called once per frame
@@ -92,6 +96,8 @@ public class Player : MonoBehaviour
     private void Idle()
     {
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        animator.SetFloat("SpeedX", 0);
+        animator.SetFloat("SpeedY", rb.linearVelocity.y);
     }
 
     private void Jump()
@@ -113,12 +119,15 @@ public class Player : MonoBehaviour
         float movementDirection = input.normalized.x > 0 ? 1 : input.normalized.x < 0 ? -1 : 0;
         rb.linearVelocity = new Vector2(movementDirection * playerData.moveSpeed, rb.linearVelocity.y);
         transform.localScale = new Vector3(movementDirection != 0 ? movementDirection : transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        animator.SetFloat("SpeedX", Mathf.Abs(rb.linearVelocity.x));
+        animator.SetFloat("SpeedY", rb.linearVelocity.y);
+
+        Debug.Log("SpeedX: " + rb.linearVelocity.x + " SpeedY: " + rb.linearVelocity.y);
     }
 
     private bool CheckGround()
     {
         RaycastHit2D hit = Physics2D.Raycast(groundCheck.position, Vector2.down, groundCheckRadius, groundLayer);
-        Debug.Log(hit.collider != null ? "Grounded" : "Not Grounded");
         return hit.collider != null;
     }
 
@@ -126,6 +135,17 @@ public class Player : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
+    }
+
+    public void TakeDamage()
+    {
+        playerData.currentHealth -= 10f;
+        if(playerData.currentHealth <= 0)
+        {
+            Debug.Log("Player Dead");
+            Destroy(gameObject);
+        }
+        Debug.Log("Player Health: " + playerData.currentHealth);
     }
 }
 
