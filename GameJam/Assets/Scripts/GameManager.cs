@@ -5,7 +5,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public float coins = 0;
+    public int coins = 0;
     public float time = 0;
 
 
@@ -32,5 +32,10 @@ public class GameManager : MonoBehaviour
     {
         time += Time.deltaTime;
         UIManager.Instance.UpdateTime(time);
+    }
+    public void AddCoins(int value)
+    {
+        coins += value;
+        UIManager.Instance.UpdateCoins(coins);
     }
 }
