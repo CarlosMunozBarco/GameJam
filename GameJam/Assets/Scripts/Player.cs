@@ -1,4 +1,4 @@
-using Unity.Android.Gradle.Manifest;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -137,9 +137,9 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(groundCheck.position, groundCheck.position + Vector3.down * groundCheckRadius);
     }
 
-    public void TakeDamage()
+    public void TakeDamage(float damage)
     {
-        playerData.currentHealth -= 10f;
+        playerData.currentHealth -= damage;
         if(playerData.currentHealth <= 0)
         {
             Debug.Log("Player Dead");
